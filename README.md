@@ -5,9 +5,9 @@ thermodynamically limited reactions (DG > 0).
 
 Example use cases:
 
-        -------------------
-        single calculation:
-        -------------------
+
+single calculation:
+-------------------
         >>> DMC = Thermo(DH= -24, DS= -0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
@@ -18,9 +18,9 @@ Example use cases:
             'MeOH': [17.842013377368318],
             'DMC': [3.0789933113158408],
             'H2O': [3.0789933113158408]}
-        ----------------------
-        multiple temperatures:
-        ----------------------
+
+multiple temperatures:
+----------------------
         >>> DMC = Thermo(DH= -24, DS= -0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
@@ -34,9 +34,9 @@ Example use cases:
         'MeOH': [17.842013377368318, 18.13580918129034],
         'DMC': [3.0789933113158408, 2.9320954093548233],
         'H2O': [3.0789933113158408, 2.9320954093548233]}
-        ---------------------------------
-        Multiple starting concentrations:
-        ---------------------------------
+
+Multiple starting concentrations:
+---------------------------------
         >>> DMC = Thermo(DH= -24, DS= -0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
@@ -53,9 +53,9 @@ Example use cases:
         'MeOH': [7.148358186717942, 6.56757827884657],
         'DMC': [1.4258209066410286, 1.7162108605767157],
         'H2O': [1.4258209066410286, 1.7162108605767157]}
-        --------------------------------
-        Product starting concentrations:
-        --------------------------------
+
+Product starting concentrations:
+--------------------------------
         >>> DMC = Thermo(DH= -24, DS= -0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0.134], [1, 1])
