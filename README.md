@@ -8,7 +8,7 @@ Example use cases:
 
 Single calculation:
 -------------------
-        >>> DMC = Thermo(DH= -24, DS= -0.123)
+        >>> DMC = Thermo(DH=-24, DS=-0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
         >>> DMC.thermodynamics(298)
@@ -21,7 +21,7 @@ Single calculation:
             
 Multiple temperatures:
 ----------------------
-        >>> DMC = Thermo(DH= -24, DS= -0.123)
+        >>> DMC = Thermo(DH=-24, DS=-0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
         >>> T = 298
@@ -37,7 +37,7 @@ Multiple temperatures:
 
 Multiple starting concentrations:
 ---------------------------------
-        >>> DMC = Thermo(DH= -24, DS= -0.123)
+        >>> DMC = Thermo(DH=-24, DS=-0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
         >>> T = 298
@@ -56,7 +56,7 @@ Multiple starting concentrations:
 
 Product starting concentrations:
 --------------------------------
-        >>> DMC = Thermo(DH= -24, DS= -0.123)
+        >>> DMC = Thermo(DH=-24, DS=-0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0.134], [1, 1])
         >>> T = 298
