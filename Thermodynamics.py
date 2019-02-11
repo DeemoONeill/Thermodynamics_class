@@ -2,7 +2,7 @@
 """
 Created on Tue Feb  5 16:22:54 2019
 
-@author: Matt
+@author: Matt O'Neill
 """
 
 import math as ma
