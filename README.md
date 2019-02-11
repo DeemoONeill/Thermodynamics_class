@@ -6,7 +6,7 @@ thermodynamically limited reactions (DG > 0).
 Example use cases:
 
 
-single calculation:
+Single calculation:
 -------------------
         >>> DMC = Thermo(DH= -24, DS= -0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
@@ -18,8 +18,8 @@ single calculation:
             'MeOH': [17.842013377368318],
             'DMC': [3.0789933113158408],
             'H2O': [3.0789933113158408]}
-
-multiple temperatures:
+            
+Multiple temperatures:
 ----------------------
         >>> DMC = Thermo(DH= -24, DS= -0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
