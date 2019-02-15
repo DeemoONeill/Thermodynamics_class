@@ -7,6 +7,7 @@ Created on Tue Feb  5 16:22:54 2019
 
 import math as ma
 
+
 class Thermo:
     """Takes values of DH and DS at a given temperature
     ------------------
@@ -15,35 +16,38 @@ class Thermo:
     DH -- Enthalpy change of the reaction at Temperature T (float)
     DS -- Entropy change of the reaction at Temperature T (float)
     T -- Temperature at which DH and DS were calculated (default 298)
-    
+
     ------------
     Key Methods:
     ------------
     Reactants(names, starting_concentrations, stoichiometry)
     Products(names, starting_concentrations, stoichiometry)
-    sets properties of the reactants and products - names, starting_concentrations 
-    and stoichiometrys should all be given as lists (even for single values)
-    
+    sets properties of the reactants and products - names,
+    starting_concentrations and stoichiometrys should all be given as lists
+    (even for single values)
+
     dictionary_flush()
     Sets all keys in the dictionary to empty lists
-    
+
     return_dictionary()
-    Returns the dictionary of calculated values includes T, DH, DS, product and reactant
-    concentrations
-    
-    thermodynamics(temperature = 298, error=1e-09, p=20, K=True, return_dict = False)
-    calculates reactant and product concentrations for the given temperature. Takes Temperature,
-    error, P, K, and return_dict arguments.
-    error gives the tolerance between Keq calculated from DG and Keq calculated by 
-    products/reactants
-    p is used in the same was as in PID systems, it is multiplied by the difference between
-    the setpoint and current measurement, and used to adjust the concentration values
-    K is whether the values for temperature are saved in Kelvin or Celsius (no support for F)
-    return_dict returns the dictionary at the end of the calculation. mainly used for single 
-    calculations
-    
+    Returns the dictionary of calculated values includes T, DH, DS, product
+    and reactant concentrations
+
+    thermodynamics(temperature = 298, error=1e-09, p=20, K=True,
+    return_dict = False)
+    calculates reactant and product concentrations for the given temperature.
+    Takes Temperature, error, P, K, and return_dict arguments.
+    error gives the tolerance between Keq calculated from DG and Keq calculated
+    by products/reactants
+    p is used in the same was as in PID systems, it is multiplied by the
+    difference between the setpoint and current measurement, and used to adjust
+    the concentration values.
+    K is whether the values for temperature are saved in Kelvin or Celsius
+    (no support for F)
+    return_dict returns the dictionary at the end of the calculation. mainly
+    used for single     calculations
     """
-    def __init__(self, DH= None, DS= None, T= 298):
+    def __init__(self, DH=None, DS=None, T=298):
         self.DSstd = DS
         self.DHstd = DH
         self._DS_T = self.DSstd
@@ -68,13 +72,13 @@ class Thermo:
         --------
         for the reaction CO2 + 2MeOH --> DMC + H2O
 
-        dmc = thermo(DH = -24, DS = -0.12, T = 298)
+        dmc = thermo(DH=-24, DS=-0.12, T=298)
         dmc.Reactants(['CO2', 'MeOH'], [8, 24.5], [1,2])
         """
         self._ReactantNames = names
         self._ReactantStartingConcentration = starting_concentrations
         self._ReactantStoichiometry = stoichiometry
-        #self._ReactantHeatCapacities = heat_capacities
+        # self._ReactantHeatCapacities = heat_capacities
         for i in range(len(self._ReactantNames)):
             try:
                 self._dictionary[self._ReactantNames[i]]
@@ -112,9 +116,11 @@ class Thermo:
     def _nCP(self):
         heat_capacity = 0
         for i in range(len(self._ProductStoichiometry)):
-            heat_capacity += self._ProductStoichiometry[i] * self._ProductHeatCapacities[i]
+            heat_capacity += (self._ProductStoichiometry[i] *
+                              self._ProductHeatCapacities[i])
         for i in range(len(self._ReactantStartingConcentration)):
-            heat_capacity -= self._ReactantStoichiometry[i] * self._ReactantHeatCapacities[i]
+            heat_capacity -= (self._ReactantStoichiometry[i] *
+                              self._ReactantHeatCapacities[i])
         return heat_capacity
 
     def _correction(self, T):
@@ -125,31 +131,9 @@ class Thermo:
         self._dictionary['DS'].append(self._DS_T)
         self._dictionary['DH'].append(self._DH_T)
         self._dictionary['T'].append(T)
-        
-    def dictionary_flush(self):
+
+    def flush_dictionary(self):
         """Flushes the dictionary, sets each key to an empty list
-
-        example:
-
-        >>> for key in dictionary:
-        ...     print(len(dmc[key]))
-        10
-        10
-        10
-        10
-        10
-        10
-        10
-        >>> dmc.dictionary_flush()
-        >>> for key in dictionary:
-        ...     print(len(dmc[key]))
-        0
-        0
-        0
-        0
-        0
-        0
-        0
         """
         for key in self._dictionary:
             self._dictionary[key] = []
@@ -158,9 +142,10 @@ class Thermo:
         """Returns the data containing dictionary"""
         return self._dictionary
 
-    def thermodynamics(self, temperature = 298, error=1e-09, p=20, K=True, return_dict = False):
-        """Calculates the equilibrium concentrations for each of the products and reactants in the
-        reaction at a given temperature.
+    def thermodynamics(self, temperature=298, error=1e-09, p=20, K=True,
+                       return_dict=False):
+        """Calculates the equilibrium concentrations for each of the products
+        and reactants in the reaction at a given temperature.
 
         first DG is calculated using:
         DG = DH - TDS
@@ -168,24 +153,28 @@ class Thermo:
         followed by the equilibrium constant Keq:
         Keq = exp(-DG/RT)
 
-        The concentrations of each of the reactants and products are then adjusted until this valuse of Keq is reached
-        using the equation:
+        The concentrations of each of the reactants and products are then
+        adjusted until this valuse of Keq is reached using the equation:
         Keq = [Products]**S/[Reactants]**S
 
         ------------------
         Keyword arguments:
         ------------------
 
-        temperature -- The temperature in Kelvin at which the equilibrium concentrations should be calculated (default 298)
+        temperature -- The temperature in Kelvin at which the equilibrium
+        concentrations should be calculated (default 298)
 
-        error -- tolerance for when Keq calculated from DG and from concentrations are considered equal (default 1e-9)
+        error -- tolerance for when Keq calculated from DG and from
+        concentrations are considered equal (default 1e-9)
 
-        p -- The proportional correction applied to the result. if calculation is slow, try adjusting the value for P
-        (default 20)
+        p -- The proportional correction applied to the result. if calculation
+        is slow, try adjusting the value for P (default 20)
 
-        K -- whether or not Tempertature is appended to the dictionary in Kelvin (True) or °C (False). (default True)
+        K -- whether or not Tempertature is appended to the dictionary in
+        Kelvin (True) or °C (False). (default True)
 
-        return_dict -- whether to return the dictionary after calculation (default False)
+        return_dict -- whether to return the dictionary after calculation
+        (default False)
 
         ---------
         examples:
@@ -193,7 +182,7 @@ class Thermo:
         -------------------
         single calculation:
         -------------------
-        >>> DMC = Thermo(DH= -24, DS= -0.123)
+        >>> DMC = Thermo(DH=-24, DS=-0.123)
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
         >>> DMC.thermodynamics(298)
@@ -212,7 +201,7 @@ class Thermo:
         >>> DMC.Reactants(["CO2", "MeOH"], [8, 24], [1, 2])
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
         >>> T = 298
-        >>> for i in range(2)
+        >>> for i in range(2):
         ...     DMC.thermodynamics(T)
         ...     T += 5
 
@@ -273,20 +262,18 @@ class Thermo:
         pconc = self._ProductStartingConcentration.copy()
         sconc = self._ReactantStartingConcentration.copy()
 
-
-        while ma.isclose(DGkeq,Conckeq, rel_tol=error) == False:
+        while ma.isclose(DGkeq, Conckeq, rel_tol=error) is False:
             iterator = p*(DGkeq-Conckeq)
             numerator = 1
             denominator = 1
-
-            #Reactants
+            # Reactants
             for i in range(len(sconc)):
                 working = sconc.pop(0)
                 working -= iterator*self._ReactantStoichiometry[i]
                 denominator *= working ** self._ReactantStoichiometry[i]
                 sconc.append(working)
 
-            #Products
+            # Products
             for i in range(len(pconc)):
                 working = pconc.pop(0)
                 working += iterator*self._ProductStoichiometry[i]
