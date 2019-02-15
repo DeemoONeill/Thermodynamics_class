@@ -7,7 +7,6 @@ Created on Tue Feb  5 16:22:54 2019
 
 import math as ma
 
-
 class Thermo:
     """Takes values of DH and DS at a given temperature
     ------------------
@@ -16,6 +15,33 @@ class Thermo:
     DH -- Enthalpy change of the reaction at Temperature T (float)
     DS -- Entropy change of the reaction at Temperature T (float)
     T -- Temperature at which DH and DS were calculated (default 298)
+    
+    ------------
+    Key Methods:
+    ------------
+    Reactants(names, starting_concentrations, stoichiometry)
+    Products(names, starting_concentrations, stoichiometry)
+    sets properties of the reactants and products - names, starting_concentrations 
+    and stoichiometrys should all be given as lists (even for single values)
+    
+    dictionary_flush()
+    Sets all keys in the dictionary to empty lists
+    
+    return_dictionary()
+    Returns the dictionary of calculated values includes T, DH, DS, product and reactant
+    concentrations
+    
+    thermodynamics(temperature = 298, error=1e-09, p=20, K=True, return_dict = False)
+    calculates reactant and product concentrations for the given temperature. Takes Temperature,
+    error, P, K, and return_dict arguments.
+    error gives the tolerance between Keq calculated from DG and Keq calculated by 
+    products/reactants
+    p is used in the same was as in PID systems, it is multiplied by the difference between
+    the setpoint and current measurement, and used to adjust the concentration values
+    K is whether the values for temperature are saved in Kelvin or Celsius (no support for F)
+    return_dict returns the dictionary at the end of the calculation. mainly used for single 
+    calculations
+    
     """
     def __init__(self, DH= None, DS= None, T= 298):
         self.DSstd = DS
@@ -99,6 +125,7 @@ class Thermo:
         self._dictionary['DS'].append(self._DS_T)
         self._dictionary['DH'].append(self._DH_T)
         self._dictionary['T'].append(T)
+        
     def dictionary_flush(self):
         """Flushes the dictionary, sets each key to an empty list
 
