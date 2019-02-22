@@ -3,6 +3,10 @@
 Created on Tue Feb  5 16:22:54 2019
 
 @author: Matt O'Neill
+
+Class for performing numerical optimisation to determine equilibrium 
+concentrations of reactants and products in an equilibrium limited
+reaction (DG > 0) where DH and DS are known.
 """
 
 import math as ma
