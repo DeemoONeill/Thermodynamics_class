@@ -3,6 +3,6 @@ python: 3.6
 
 install: 
     - python setup.py install
-    - pip install doctest
+    - pip install .
 
 script: doctest
