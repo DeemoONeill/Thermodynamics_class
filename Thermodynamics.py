@@ -4,12 +4,13 @@ Created on Tue Feb  5 16:22:54 2019
 
 @author: Matt O'Neill
 
-Class for performing numerical optimisation to determine equilibrium 
+Class for performing numerical optimisation to determine equilibrium
 concentrations of reactants and products in an equilibrium limited
 reaction (DG > 0) where DH and DS are known.
 """
 
 import math as ma
+from collections import deque
 
 
 class Thermo:
@@ -135,6 +136,7 @@ class Thermo:
         self._dictionary['DS'].append(self._DS_T)
         self._dictionary['DH'].append(self._DH_T)
         self._dictionary['T'].append(T)
+        return
 
     def flush_dictionary(self):
         """Flushes the dictionary, sets each key to an empty list
@@ -191,11 +193,7 @@ class Thermo:
         >>> DMC.Products(["DMC", "H2O"], [0, 0], [1, 1])
         >>> DMC.thermodynamics(298)
         >>> print(DMC.return_dictionary())
-            {'DH': [-24], 'DS': [-0.123], 'T': [298],
-            'CO2': [4.921006688684159],
-            'MeOH': [17.842013377368318],
-            'DMC': [3.0789933113158408],
-            'H2O': [3.0789933113158408]}
+        {'DH': [-24], 'DS': [-0.123], 'T': [298], 'CO2': [4.921006688684159], 'MeOH': [17.842013377368318], 'DMC': [3.0789933113158408], 'H2O': [3.0789933113158408]}
 
         ----------------------
         multiple temperatures:
@@ -210,11 +208,7 @@ class Thermo:
         ...     T += 5
 
         >>> print(DMC.return_dictionary())
-        {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 303],
-        'CO2': [4.921006688684159, 5.067904590645182],
-        'MeOH': [17.842013377368318, 18.13580918129034],
-        'DMC': [3.0789933113158408, 2.9320954093548233],
-        'H2O': [3.0789933113158408, 2.9320954093548233]}
+        {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 303], 'CO2': [4.921006688684159, 5.067904590645182], 'MeOH': [17.842013377368318, 18.13580918129034], 'DMC': [3.0789933113158408, 2.9320954093548233], 'H2O': [3.0789933113158408, 2.9320954093548233]}
 
         ---------------------------------
         Multiple starting concentrations:
@@ -231,11 +225,7 @@ class Thermo:
         ...     DMC.thermodynamics(T, return_dict = True)
         ...     CO2+=5
         >>> print(DMC.return_dictionary())
-        {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 298],
-        'CO2': [6.574179093358968, 11.283789139423279],
-        'MeOH': [7.148358186717942, 6.56757827884657],
-        'DMC': [1.4258209066410286, 1.7162108605767157],
-        'H2O': [1.4258209066410286, 1.7162108605767157]}
+        {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 298], 'CO2': [6.574179093358968, 11.283789139423279], 'MeOH': [7.148358186717942, 6.56757827884657], 'DMC': [1.4258209066410286, 1.7162108605767157], 'H2O': [1.4258209066410286, 1.7162108605767157]}
 
         --------------------------------
         Product starting concentrations:
@@ -252,19 +242,14 @@ class Thermo:
         ...     DMC.thermodynamics(T, return_dict = True)
         ...     CO2+=5
         >>> print(DMC.return_dictionary())
-        {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 298],
-        'CO2': [6.6175669997054625, 11.324869902582156],
-        'MeOH': [7.235133999410933, 6.649739805164333],
-        'DMC': [1.3824330002945329, 1.6751300974178351],
-        'H2O': [1.5164330002945328, 1.809130097417835]}
-
+        {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 298], 'CO2': [6.6175669997054625, 11.324869902582156], 'MeOH': [7.235133999410933, 6.649739805164333], 'DMC': [1.3824330002945329, 1.6751300974178351], 'H2O': [1.5164330002945328, 1.809130097417835]}
         """
 
         self._Calc_DG(temperature)
         DGkeq = ma.exp(-(self.DG*1000)/(8.314*temperature))
         Conckeq = 0
-        pconc = self._ProductStartingConcentration.copy()
-        sconc = self._ReactantStartingConcentration.copy()
+        pconc = deque(self._ProductStartingConcentration.copy())
+        sconc = deque(self._ReactantStartingConcentration.copy())
 
         while ma.isclose(DGkeq, Conckeq, rel_tol=error) is False:
             iterator = p*(DGkeq-Conckeq)
@@ -272,27 +257,32 @@ class Thermo:
             denominator = 1
             # Reactants
             for i in range(len(sconc)):
-                working = sconc.pop(0)
+                working = sconc.popleft()
                 working -= iterator*self._ReactantStoichiometry[i]
                 denominator *= working ** self._ReactantStoichiometry[i]
                 sconc.append(working)
 
             # Products
             for i in range(len(pconc)):
-                working = pconc.pop(0)
+                working = pconc.popleft()
                 working += iterator*self._ProductStoichiometry[i]
                 numerator *= working ** self._ProductStoichiometry[i]
                 pconc.append(working)
 
             Conckeq = numerator / denominator
 
-        for i in range(len(sconc)):
-            self._dictionary[self._ReactantNames[i]].append(sconc[i])
-        for i in range(len(pconc)):
-            self._dictionary[self._ProductNames[i]].append(pconc[i])
+        for i, svalue in enumerate(sconc):
+            self._dictionary[self._ReactantNames[i]].append(svalue)
+        for i, pvalue in enumerate(pconc):
+            self._dictionary[self._ProductNames[i]].append(pvalue)
         if K:
             self._appender(temperature)
         else:
             self._appender((temperature-273))
         if return_dict:
-            self.return_dictionary()
+            return self.return_dictionary()
+
+
+if __name__ == '__main__':
+    import doctest
+    print(doctest.testmod())
