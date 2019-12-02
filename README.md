@@ -45,7 +45,7 @@ Multiple starting concentrations:
         >>> MeOH = 10
         >>> for i in range(2):
         ...     DMC.Reactants(["CO2", "MeOH"], [CO2, MeOH], [1, 2])
-        ...     DMC.thermodynamics(T, return_dict = True)
+        ...     DMC.thermodynamics(T)
         ...     CO2+=5
         >>> print(DMC.return_dictionary())
         {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 298],
@@ -64,7 +64,7 @@ Product starting concentrations:
         >>> MeOH = 10
         >>> for i in range(2):
         ...     DMC.Reactants(["CO2", "MeOH"], [CO2, MeOH], [1, 2])
-        ...     DMC.thermodynamics(T, return_dict = True)
+        ...     DMC.thermodynamics(T)
         ...     CO2+=5
         >>> print(DMC.return_dictionary())
         {'DH': [-24, -24], 'DS': [-0.123, -0.123], 'T': [298, 298],
